@@ -7,7 +7,7 @@
  * @LastEditors: ankeji
  * @LastEditTime: 2020-07-06 22:09:33
  */ 
-//import Vue from 'vue'
+import Vue from 'vue'
 import App from './App.vue'
 
 import router from './router'

@@ -5,15 +5,15 @@
  * @Author: ankeji
  * @Date: 2020-06-09 15:14:20
  * @LastEditors: ankeji
- * @LastEditTime: 2020-07-06 22:04:08
+ * @LastEditTime: 2020-07-07 09:14:06
  */
-//import Vue from 'vue'
+import Vue from 'vue'
 // import VueRouter from 'vue-router'
 // 进度条
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 // eslint-disable-next-line no-undef
-//Vue.use(VueRouter)
+Vue.use(VueRouter)
 
 import util from '../util/util'
 // 路由数据
