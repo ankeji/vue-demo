@@ -15,6 +15,24 @@ function resolve(dir) {
 const CompressionPlugin = require('compression-webpack-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 module.exports = {
+    publicPath: '/', // 默认为'/'
+
+    // 将构建好的文件输出到哪里，本司要求
+    outputDir: 'dist',
+
+    // 放置生成的静态资源(js、css、img、fonts)的目录。
+    assetsDir: 'static',
+
+    // 指定生成的 index.html 的输出路径
+    indexPath: 'index.html',
+
+    // 是否使用包含运行时编译器的 Vue 构建版本。
+    runtimeCompiler: false,
+
+    transpileDependencies: [],
+
+    // 如果你不需要生产环境的 source map
+    productionSourceMap: false,
     // 是一个函数，允许对内部的 webpack 配置进行更细粒度的修改。
     chainWebpack: (config) => {
         // 配置别名
