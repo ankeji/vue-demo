@@ -1,15 +1,19 @@
 <!--
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: ankeji
  * @Date: 2020-07-06 18:21:52
  * @LastEditors: ankeji
  * @LastEditTime: 2020-07-07 09:14:49
---> 
+-->
 <!-- 测试页面 -->
 <template>
 <div>
     <router-link to="/index">首页</router-link>
+    <ul>
+        报错日志
+        <li v-for="(item,index) in logError" :key="index">{{item}}</li>
+    </ul>
 </div>
 </template>
 
@@ -27,7 +31,11 @@ return {
 };
 },
 //监听属性 类似于data概念
-computed: {},
+computed: {
+    logError(){
+        return this.$store.state.log
+    }
+},
 //监控data中的数据变化
 watch: {},
 //方法集合
@@ -36,7 +44,7 @@ methods: {
 },
 //生命周期 - 创建完成（可以访问当前this实例）
 created() {
-    
+
 },
 //生命周期 - 挂载完成（可以访问DOM元素）
 mounted() {

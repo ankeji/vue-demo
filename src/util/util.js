@@ -1,14 +1,16 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: ankeji
  * @Date: 2020-07-06 18:10:08
  * @LastEditors: ankeji
  * @LastEditTime: 2020-07-06 18:23:10
- */ 
+ */
 import cookies from './util.cookies'
+import log from './util.log'
 const util = {
-    cookies
+    cookies,
+    log
 }
 
 

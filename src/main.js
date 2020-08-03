@@ -1,12 +1,12 @@
 /* eslint-disable no-undef */
 /*
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: ankeji
  * @Date: 2020-07-06 17:57:44
  * @LastEditors: ankeji
  * @LastEditTime: 2020-07-06 22:09:33
- */ 
+ */
 import Vue from 'vue'
 import App from './App.vue'
 
@@ -32,7 +32,14 @@ allfiles.forEach(e => {
 
 Vue.config.productionTip = false
 
-new Vue({
+import VueError from './plugin/error'
+// 插件
+Vue.use(VueError)
+// Vue.use(pluginLog)
+
+
+
+export default new Vue({
   router,
   store,
   render: h => h(App)
