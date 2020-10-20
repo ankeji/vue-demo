@@ -6,6 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build:zip": "vue-cli-service build && node zip.js",
+    "analys": "cross-env NODE_ENV=production npm_config_report=true npm run build",
     "lint": "vue-cli-service lint",
     "deploy:dev": "npm run build && cross-env NODE_ENV=development node ./deploy",
     "deploy:prod": "npm run build && cross-env NODE_ENV=production node ./deploy"
@@ -15,6 +16,7 @@
     "compressing": "^1.5.1",
     "compression-webpack-plugin": "^4.0.0",
     "core-js": "^3.6.5",
+    "cross-env": "^7.0.2",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.19",
     "nprogress": "^0.2.0",
@@ -35,7 +37,7 @@
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11",
-    "webpack-bundle-analyzer": "^3.8.0"
+    "webpack-bundle-analyzer": "^3.9.0"
   },
   "eslintConfig": {
     "root": true,
