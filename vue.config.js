@@ -4,10 +4,9 @@
  * @Author: ankeji
  * @Date: 2020-07-06 18:21:11
  * @LastEditors: ankeji
- * @LastEditTime: 2020-10-20 11:21:38
+ * @LastEditTime: 2020-10-20 11:22:02
  */
 const path = require('path')
-console.log(process.env.npm_config_report, '安科吉');
 // 拼接路径
 function resolve(dir) {
     return path.join(__dirname, dir)
