@@ -4,7 +4,7 @@
  * @Author: ankeji
  * @Date: 2020-07-06 18:21:11
  * @LastEditors: ankeji
- * @LastEditTime: 2020-10-20 11:18:11
+ * @LastEditTime: 2020-10-20 11:21:38
  */
 const path = require('path')
 console.log(process.env.npm_config_report, '安科吉');
@@ -14,7 +14,6 @@ function resolve(dir) {
 }
 const CompressionPlugin = require('compression-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 module.exports = {
     publicPath: '/', // 默认为'/'
 
