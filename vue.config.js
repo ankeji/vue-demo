@@ -4,7 +4,7 @@
  * @Author: ankeji
  * @Date: 2020-07-06 18:21:11
  * @LastEditors: ankeji
- * @LastEditTime: 2020-10-20 10:50:06
+ * @LastEditTime: 2020-10-20 11:18:11
  */
 const path = require('path')
 console.log(process.env.npm_config_report, '安科吉');
@@ -14,6 +14,7 @@ function resolve(dir) {
 }
 const CompressionPlugin = require('compression-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 module.exports = {
     publicPath: '/', // 默认为'/'
 
@@ -54,11 +55,6 @@ module.exports = {
         config.resolve
             .symlinks(true)
         if (process.env.NODE_ENV === 'production') {
-            config.optimization.minimizer('terser').tap((args) => {
-                // 去除生产环境console
-                args[0].terserOptions.compress.drop_console = true
-                return args
-            })
             /**
             * 生产环境用远程cdn包缩小项目体积，优化首页加载速度
             */
@@ -72,6 +68,10 @@ module.exports = {
     },
     configureWebpack: (config) => {
         if (process.env.NODE_ENV === 'production') {
+            config.optimization.minimizer[0].options.terserOptions.compress.warnings = false
+            config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
+            config.optimization.minimizer[0].options.terserOptions.compress.drop_debugger = true
+            config.optimization.minimizer[0].options.terserOptions.compress.pure_funcs = ['console.log']
             if (process.env.npm_config_report) {
                 config.plugins.push(
                     new BundleAnalyzerPlugin({
