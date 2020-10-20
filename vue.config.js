@@ -4,7 +4,7 @@
  * @Author: ankeji
  * @Date: 2020-07-06 18:21:11
  * @LastEditors: ankeji
- * @LastEditTime: 2020-10-20 11:22:02
+ * @LastEditTime: 2020-10-20 11:43:57
  */
 const path = require('path')
 // 拼接路径
@@ -32,6 +32,34 @@ module.exports = {
 
     // 如果你不需要生产环境的 source map
     productionSourceMap: false,
+
+    // 设置生成的 HTML 中 <link rel="stylesheet"> 和 <script> 标签的 crossorigin 属性（注：仅影响构建时注入的标签）
+    crossorigin: '',
+
+    // 在生成的 HTML 中的 <link rel="stylesheet"> 和 <script> 标签上启用 Subresource Integrity (SRI)
+    integrity: false,
+
+    // 是否在开发环境下通过 eslint-loader 在每次保存时 lint 代码 (在生产构建时禁用 eslint-loader)
+    lintOnSave: process.env.NODE_ENV !== 'production',
+
+    // css的处理
+    css: {
+        // 从 v4 起已弃用，请使用css.requireModuleExtension。 在 v3 中，这个选项含义与 css.requireModuleExtension 相反。
+        modules: true,
+        // 默认情况下，只有 *.module.[ext] 结尾的文件才会被视作 CSS Modules 模块。设置为 false 后你就可以去掉文件名中的 .module 并将所有的 *.(css|scss|sass|less|styl(us)?) 文件视为 CSS Modules 模块。
+        requireModuleExtension: true,
+        // 是否将组件中的 CSS 提取至一个独立的 CSS 文件中,当作为一个库构建时，你也可以将其设置为 false 免得用户自己导入 CSS
+        // 默认生产环境下是 true，开发环境下是 false
+        extract: false,
+        // 是否为 CSS 开启 source map。设置为 true 之后可能会影响构建的性能
+        sourceMap: false,
+        //向 CSS 相关的 loader 传递选项(支持 css-loader postcss-loader sass-loader less-loader stylus-loader)
+        loaderOptions: {
+            css: {},
+            less: {}
+        }
+    },
+
     // 是一个函数，允许对内部的 webpack 配置进行更细粒度的修改。
     chainWebpack: (config) => {
         // 配置别名
@@ -101,7 +129,6 @@ module.exports = {
 
         }
     },
-    lintOnSave: false,
     devServer: {
         host: '0.0.0.0',
         port: 8088, // 端口号
