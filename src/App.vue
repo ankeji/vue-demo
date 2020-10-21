@@ -4,7 +4,7 @@
  * @Author: ankeji
  * @Date: 2020-07-06 17:57:44
  * @LastEditors: ankeji
- * @LastEditTime: 2020-07-06 18:02:51
+ * @LastEditTime: 2020-10-21 13:45:01
 -->
 <template>
   <div id="app">
@@ -20,7 +20,7 @@
     name: 'app',
     watch: {},
     created() {
-      console.log(大萨达)
+      console.log(this.$util.log.capsule(123,'安科吉','danger'));
     },
     methods: {}
   }

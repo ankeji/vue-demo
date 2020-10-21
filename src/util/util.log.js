@@ -1,3 +1,11 @@
+/*
+ * @Descripttion: 
+ * @version: 
+ * @Author: ankeji
+ * @Date: 2020-08-03 13:10:24
+ * @LastEditors: ankeji
+ * @LastEditTime: 2020-10-21 13:40:43
+ */
 const log = {}
 
 /**
@@ -12,7 +20,7 @@ function typeColor (type = 'default') {
     case 'success': color = '#43B883'; break
     case 'warning': color = '#e6a23c'; break
     case 'danger': color = '#f56c6c'; break
-    default:; break
+    default:color = '#333333'; break
   }
   return color
 }
