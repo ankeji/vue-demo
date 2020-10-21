@@ -4,8 +4,8 @@
  * @Author: ankeji
  * @Date: 2020-06-09 16:03:53
  * @LastEditors: ankeji
- * @LastEditTime: 2020-07-02 13:51:51
- */ 
+ * @LastEditTime: 2020-10-21 09:47:53
+ */
 import axios from 'axios'
 import util from "../util/util"
 import qs from "qs";
@@ -13,8 +13,8 @@ import axiosConfig from "./axiosConfig";
 /**
  * @description 创建请求实例
  */
-function createService (intercept=true) {
-    
+function createService(intercept = true) {
+
     // 创建一个 axios 实例
     const service = axios.create({
         baseURL: axiosConfig.baseURL, // api的base_url
@@ -22,13 +22,13 @@ function createService (intercept=true) {
     })
     // 请求拦截
     service.interceptors.request.use(
-        intercept?config => {
+        intercept ? config => {
             if (util.cookies.get("token")) {
                 config.headers.Authorization = "Bearer" + " " + util.cookies.get("token");
             }
             config.headers["Content-Type"] = "application/json";
             return config;
-        }:config=>config,
+        } : config => config,
         error => {
             // 发送失败
             console.log(error)
@@ -38,33 +38,7 @@ function createService (intercept=true) {
     // 响应拦截
     service.interceptors.response.use(
         response => {
-            // dataAxios 是 axios 返回数据中的 data
-            const dataAxios = response
-            return dataAxios;
-            // console.log(dataAxios);
-            // // 这个状态码是和后端约定的
-            // const { status } = dataAxios
-            // console.log(status);
-            // // 根据 code 进行判断
-            // if (status === undefined) {
-            //     // 如果没有 code 代表这不是项目后端开发的接口
-            //     return dataAxios
-            // } else {
-            //     // 有 code 代表这是一个后端接口 可以进行进一步的判断
-            //     switch (status) {
-            //         case 200:
-            //             // [ 示例 ] status === 200 代表没有错误
-            //             return dataAxios.data
-            //         case 'xxx':
-            //             // [ 示例 ] 其它和后台约定的 code
-            //             // errorCreate(`[ code: xxx ] ${dataAxios.msg}: ${response.config.url}`)
-            //             break
-            //         default:
-            //             // 不是正确的 code
-            //             // errorCreate(`${dataAxios.msg}: ${response.config.url}`)
-            //             break
-            //     }
-            // }
+            return response;
         },
         error => {
             if (error && error.response) {
@@ -82,8 +56,18 @@ function createService (intercept=true) {
                     case 505: error.message = 'HTTP版本不受支持'; break
                     default: break
                 }
+                return Promise.reject(error.response.data)
+            } else {
+                // 处理断网的情况
+                // eg:请求超时或断网时，更新state的network状态
+                // network状态在app.vue中控制着一个全局的断网提示组件的显示隐藏
+                // 关于断网组件中的刷新重新获取数据，会在断网组件中说明
+                if (!window.navigator.onLine) {
+                    error.message = '您当前没有网络！'
+                } else {
+                    return Promise.reject(error);
+                }
             }
-            return Promise.reject(error.response.data)
         }
     )
     return service
@@ -103,7 +87,6 @@ let cancelRequest;
 const method = {};
 
 
-
 /**
  * 不拦截的接口封装开始
  */
@@ -111,10 +94,10 @@ method.noGet = (url, config = {}) => {
     return request.get(url, config);
 }
 //post请求类型，不处理数据类型的
-method.nopostJson = ( url, body = {}, config = {}) => {
+method.nopostJson = (url, body = {}, config = {}) => {
     return request.post(url, body, config);
 }
-method.noPostFormData = ( url, body = {}, config = {}) => {
+method.noPostFormData = (url, body = {}, config = {}) => {
     let f = new FormData();
     Object.entries(body).forEach(data => {
         f.append(...data);
@@ -132,7 +115,9 @@ method.noPostFormData = ( url, body = {}, config = {}) => {
 method.get = (url, config = {}) => {
     return service.get(url, config);
 }
-method.getOrCancel = ( url) => {
+
+// 可以取消前一次请求的接口封装，只执行最后一次请求的接口
+method.getOrCancel = (url) => {
     if (cancelRequest) {
         cancelRequest()
     }
@@ -145,7 +130,8 @@ method.getOrCancel = ( url) => {
         return res
     });
 }
-method.postJsonOrCancel = ( url, params) => {
+// 可以取消前一次请求的接口封装，只执行最后一次请求的接口
+method.postJsonOrCancel = (url, params) => {
     if (cancelRequest) {
         cancelRequest()
     }
@@ -159,28 +145,28 @@ method.postJsonOrCancel = ( url, params) => {
     });
 }
 
-method.del = ( url, body = {}, config = {}) => {
+method.del = (url, body = {}, config = {}) => {
     config.params = body;
     return service.delete(url, body, config);
 }
 
 //put请求类型，不处理数据类型的
-method.putJson = ( url, body = {}, config = {}) => {
+method.putJson = (url, body = {}, config = {}) => {
     return service.put(url, body, config);
 }
 
 //post请求类型，不处理数据类型的
-method.postJson = ( url, body = {}, config = {}) => {
+method.postJson = (url, body = {}, config = {}) => {
     return service.post(url, body, config);
 }
 
 
 //post请求接口，用了qs做了处理，传过去的参数不带引号
-method.postForm = ( url, body = {}, config = {}) => {
+method.postForm = (url, body = {}, config = {}) => {
     return service.post(url, qs.stringify(body), config);
 }
 
-method.postFormData = ( url, body = {}, config = {}) => {
+method.postFormData = (url, body = {}, config = {}) => {
     let f = new FormData();
     Object.entries(body).forEach(data => {
         f.append(...data);
