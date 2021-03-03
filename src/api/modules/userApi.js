@@ -13,7 +13,7 @@ const login = {}
 /**
  * @name 手机号登录
  * @username 用户名
- * @password 密码
+ * @password 密码 
  */
 login.iphone_login_in = (param)=>{
     return method.nopostJson(`http://172.16.5.240:8088/services/authentication/api/authenticate?provider=otp`, param)
