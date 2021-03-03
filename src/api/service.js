@@ -4,12 +4,13 @@
  * @Author: ankeji
  * @Date: 2020-06-09 16:03:53
  * @LastEditors: ankeji
- * @LastEditTime: 2020-10-21 09:47:53
+ * @LastEditTime: 2021-03-03 12:01:16
  */
 import axios from 'axios'
 import util from "../util/util"
 import qs from "qs";
 import axiosConfig from "./axiosConfig";
+import localforage from 'localforage'
 /**
  * @description 创建请求实例
  */
@@ -115,7 +116,21 @@ method.noPostFormData = (url, body = {}, config = {}) => {
 method.get = (url, config = {}) => {
     return service.get(url, config);
 }
-
+//需要被缓存的接口和数据，可以过滤没必要的请求，默认实践3分钟
+method.getIfAbsent = (url, config = {}) => {
+    return localforage.getItem(url).then(async res => {
+        if (!res || res.expire < new Date().getTime()) {
+            const resp = await instance.get(url, config);
+            if(resp.status==200){
+                localforage.setItem(url, { data: {status:resp.status,data:resp.data}, expire: new Date().getTime() + 30 * 60 * 1000 })
+            }
+            return resp
+        }
+        return res.data
+    }).catch(err => {
+        console.log(err, "vls");
+    })
+}
 // 可以取消前一次请求的接口封装，只执行最后一次请求的接口
 method.getOrCancel = (url) => {
     if (cancelRequest) {

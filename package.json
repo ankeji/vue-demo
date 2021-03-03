@@ -18,9 +18,11 @@
     "core-js": "^3.6.5",
     "cross-env": "^7.0.2",
     "js-cookie": "^2.2.1",
+    "localforage": "^1.9.0",
     "lodash": "^4.17.19",
     "nprogress": "^0.2.0",
     "qs": "^6.9.4",
+    "vlf": "^1.1.0",
     "vue": "^2.6.11",
     "vue-router": "^3.3.4",
     "vuex": "^3.5.1"

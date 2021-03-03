@@ -5,7 +5,7 @@
  * @Author: ankeji
  * @Date: 2020-07-06 17:57:44
  * @LastEditors: ankeji
- * @LastEditTime: 2020-10-21 15:55:14
+ * @LastEditTime: 2021-03-03 11:58:21
  */
 import Vue from 'vue'
 import App from './App.vue'
@@ -21,7 +21,9 @@ Vue.prototype.$bus = bus;
 import Directives from './directive/directives'
 
 Vue.use(Directives);
-
+import Vlf from 'vlf'
+import localforage from 'localforage'
+Vue.use(Vlf, localforage)
 const testmodalfile = require("./components/test").default;
 
 var allfiles = [...testmodalfile]
