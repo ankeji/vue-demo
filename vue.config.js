@@ -4,7 +4,7 @@
  * @Author: ankeji
  * @Date: 2020-07-06 18:21:11
  * @LastEditors: ankeji
- * @LastEditTime: 2020-10-20 11:43:57
+ * @LastEditTime: 2021-03-03 11:57:05
  */
 const path = require('path')
 // 拼接路径
@@ -135,8 +135,8 @@ module.exports = {
         https: false, // https:{type:Boolean}
         open: false, // 配置自动启动浏览器  open: 'Google Chrome'-默认启动谷歌
         overlay: {
-            warnings: true,
-            errors: true
+            warnings: false,
+            errors: false
         },
         proxy: {
             '/api': {
