@@ -93,6 +93,12 @@ module.exports = {
                 'vue-router': 'VueRouter',
                 'axios': 'axios'
             })
+            config.plugin("html").tap(args => {
+                args[0].minify.removeAttributeQuotes = false;
+                args[0].minify.minifyCSS = true;
+                args[0].minify.minifyJS = true;
+                return args;
+            })
             if (process.env.npm_config_report) {
                 config
                     .plugin('webpack-bundle-analyzer')
