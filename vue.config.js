@@ -13,6 +13,9 @@ function resolve(dir) {
 }
 const CompressionPlugin = require('compression-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const { HashedModuleIdsPlugin } = require('webpack');
+const isProduction = process.env.NODE_ENV === 'production';
 module.exports = {
     publicPath: '/', // 默认为'/'
 
@@ -80,7 +83,7 @@ module.exports = {
         // 解决 cli3 热更新失效 https://github.com/vuejs/vue-cli/issues/1559
         config.resolve
             .symlinks(true)
-        if (process.env.NODE_ENV === 'production') {
+        if (isProduction) {
             /**
             * 生产环境用远程cdn包缩小项目体积，优化首页加载速度
             */
@@ -90,44 +93,122 @@ module.exports = {
                 'vue-router': 'VueRouter',
                 'axios': 'axios'
             })
+            if (process.env.npm_config_report) {
+                config
+                    .plugin('webpack-bundle-analyzer')
+                    .use(
+                        new BundleAnalyzerPlugin({
+                            analyzerMode: 'server',
+                            analyzerHost: '127.0.0.1',
+                            analyzerPort: 8889,
+                            reportFilename: 'report.html',
+                            defaultSizes: 'parsed',
+                            openAnalyzer: true,
+                            generateStatsFile: false,
+                            statsFilename: 'stats.json',
+                            statsOptions: null,
+                            logLevel: 'info'
+                        })
+                    )
+            }
         }
     },
     configureWebpack: (config) => {
-        if (process.env.NODE_ENV === 'production') {
-            config.optimization.minimizer[0].options.terserOptions.compress.warnings = false
-            config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
-            config.optimization.minimizer[0].options.terserOptions.compress.drop_debugger = true
-            config.optimization.minimizer[0].options.terserOptions.compress.pure_funcs = ['console.log']
-            if (process.env.npm_config_report) {
-                config.plugins.push(
-                    new BundleAnalyzerPlugin({
-                        analyzerMode: 'server',
-                        analyzerHost: '127.0.0.1',
-                        analyzerPort: 8889,
-                        reportFilename: 'report.html',
-                        defaultSizes: 'parsed',
-                        openAnalyzer: true,
-                        generateStatsFile: false,
-                        statsFilename: 'stats.json',
-                        statsOptions: null,
-                        logLevel: 'info'
-                    }))
-            }
-            return {
-                plugins: [
-                    new CompressionPlugin({
-                        test: /\.js$|\.html$|.\css/, //匹配文件名
-                        threshold: 10240, //对超过10k的数据压缩
-                        deleteOriginalAssets: false //不删除源文件
-                    })
-                ],
-                output: { // 输出重构  打包编译后的 文件名称  【模块名称.版本号.时间戳】
-                    filename: `./assets/js/[name].[chunkhash].js`, //不加版本号
-                    chunkFilename: `./assets/js/[name].[chunkhash].js`
+        const plugins = [];
+        if (isProduction) {
+            plugins.push(
+                new UglifyJsPlugin({
+                    uglifyOptions: {
+                        output: {
+                            comments: false, // 去掉注释
+                        },
+                        warnings: false,
+                        compress: {
+                            drop_console: true,
+                            drop_debugger: false,
+                            pure_funcs: ['console.log']//移除console
+                        }
+                    }
+                })
+            )
+            plugins.push(
+                new CompressionPlugin({
+                    test: /\.js$|\.html$|.\css/, //匹配文件名
+                    threshold: 10240, //对超过10k的数据压缩
+                    deleteOriginalAssets: false //不删除源文件
+                })
+            )
+            // 用于根据模块的相对路径生成 hash 作为模块 id, 一般用于生产环境
+            plugins.push(
+                new HashedModuleIdsPlugin()
+            )
+            // 开启分离js
+            config.optimization = {
+                runtimeChunk: 'single',
+                splitChunks: {
+                    chunks: 'all',
+                    maxInitialRequests: Infinity,
+                    minSize: 1000 * 60,
+                    cacheGroups: {
+                        vendor: {
+                            test: /[\\/]node_modules[\\/]/,
+                            name(module) {
+                                // 排除node_modules 然后吧 @ 替换为空 ,考虑到服务器的兼容
+                                const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
+                                return `npm.${packageName.replace('@', '')}`
+                            }
+                        }
+                    }
+                }
+            };
+            // 取消webpack警告的性能提示
+            config.performance = {
+                hints: 'warning',
+                //入口起点的最大体积
+                maxEntrypointSize: 1000 * 500,
+                //生成文件的最大体积
+                maxAssetSize: 1000 * 1000,
+                //只给出 js 文件的性能提示
+                assetFilter: function (assetFilename) {
+                    return assetFilename.endsWith('.js');
+                }
+            };
+            //优化项配置
+            config.optimization = {
+                splitChunks: { // 分割代码块
+                    cacheGroups: {
+                        vendor: {//第三方库抽离
+                            chunks: 'all',
+                            test: /node_modules/,
+                            name: 'vendor',
+                            minChunks: 1,//在分割之前，这个代码块最小应该被引用的次数
+                            maxInitialRequests: 5,
+                            minSize: 0,//大于0个字节
+                            priority: 100//权重
+                        },
+                        common: {  //公用模块抽离
+                            chunks: 'all',
+                            test: /[\\/]src[\\/]js[\\/]/,
+                            name: 'common',
+                            minChunks: 2, //在分割之前，这个代码块最小应该被引用的次数
+                            maxInitialRequests: 5,
+                            minSize: 0,//大于0个字节
+                            priority: 60
+                        },
+                        styles: { //样式抽离
+                            name: 'styles',
+                            test: /\.(sa|sc|c)ss$/,
+                            chunks: 'all',
+                            enforce: true
+                        },
+                        runtimeChunk: {
+                            name: 'manifest'
+                        }
+                    }
                 }
             }
-
         }
+        return { plugins }
     },
     devServer: {
         host: '0.0.0.0',
